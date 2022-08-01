@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class PlayerControler : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Vector2 direccion;
+    private CinemachineVirtualCamera cm;
     
     [Header("Estadisticas")]
     public float velocidadDeMovimiento = 10;
@@ -19,9 +21,12 @@ public class PlayerControler : MonoBehaviour
     [Header("Booleanos")]
     public bool puedeMover = true;
     public bool enSuelo = true;
+
+    public bool haciendoShake = false;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        cm = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
     }
 
     void Start()
@@ -35,6 +40,25 @@ public class PlayerControler : MonoBehaviour
         Movimiento();
         Agarre();
         
+    }
+    private IEnumerator AgitarCamara()
+    {
+        haciendoShake = true;
+        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = cm.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = 5;
+        yield return new WaitForSeconds(0.3f);
+        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = 0;
+        haciendoShake = false;
+    }
+    private IEnumerator AgitarCamara(float tiempo)
+    {
+
+        haciendoShake = true;
+        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = cm.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = 5;
+        yield return new WaitForSeconds(tiempo);
+        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = 0;
+        haciendoShake = false;
     }
     private void Movimiento()
     {
